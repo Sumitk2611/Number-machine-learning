@@ -34,5 +34,10 @@ namespace Assignment_3_Kemp_Sumit
         {
             previousPoint = null;
         }
+
+        private void clear_Click(object sender, EventArgs e)
+        {
+            pictureBox1.Image = null;
+        }
     }
 }

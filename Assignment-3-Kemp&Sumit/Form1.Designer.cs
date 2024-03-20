@@ -41,6 +41,8 @@
             layers = new NumericUpDown();
             label5 = new Label();
             label6 = new Label();
+            clear = new Button();
+            predict = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)eps).BeginInit();
@@ -163,17 +165,38 @@
             // 
             label6.AutoSize = true;
             label6.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point);
-            label6.Location = new Point(12, 71);
+            label6.Location = new Point(192, 71);
             label6.Name = "label6";
             label6.Size = new Size(123, 54);
             label6.TabIndex = 3;
             label6.Text = "Draw";
+            // 
+            // clear
+            // 
+            clear.Location = new Point(19, 92);
+            clear.Name = "clear";
+            clear.Size = new Size(112, 34);
+            clear.TabIndex = 4;
+            clear.Text = "Clear";
+            clear.UseVisualStyleBackColor = true;
+            clear.Click += clear_Click;
+            // 
+            // predict
+            // 
+            predict.Location = new Point(386, 92);
+            predict.Name = "predict";
+            predict.Size = new Size(112, 34);
+            predict.TabIndex = 5;
+            predict.Text = "Predict";
+            predict.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1025, 674);
+            Controls.Add(predict);
+            Controls.Add(clear);
             Controls.Add(label6);
             Controls.Add(label5);
             Controls.Add(panel1);
@@ -206,5 +229,7 @@
         private Button train;
         private Label label5;
         private Label label6;
+        private Button clear;
+        private Button predict;
     }
 }
