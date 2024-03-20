@@ -39,6 +39,8 @@
             learnRate = new NumericUpDown();
             label1 = new Label();
             layers = new NumericUpDown();
+            label5 = new Label();
+            label6 = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)eps).BeginInit();
@@ -49,9 +51,10 @@
             // 
             // pictureBox1
             // 
-            pictureBox1.Location = new Point(25, 59);
+            pictureBox1.BorderStyle = BorderStyle.FixedSingle;
+            pictureBox1.Location = new Point(12, 139);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(493, 504);
+            pictureBox1.Size = new Size(503, 368);
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
@@ -146,11 +149,33 @@
             layers.Size = new Size(180, 31);
             layers.TabIndex = 0;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point);
+            label5.Location = new Point(673, 71);
+            label5.Name = "label5";
+            label5.Size = new Size(247, 54);
+            label5.TabIndex = 2;
+            label5.Text = "Train Model";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point);
+            label6.Location = new Point(12, 71);
+            label6.Name = "label6";
+            label6.Size = new Size(123, 54);
+            label6.TabIndex = 3;
+            label6.Text = "Draw";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1022, 630);
+            ClientSize = new Size(1025, 674);
+            Controls.Add(label6);
+            Controls.Add(label5);
             Controls.Add(panel1);
             Controls.Add(pictureBox1);
             Name = "Form1";
@@ -163,6 +188,7 @@
             ((System.ComponentModel.ISupportInitialize)learnRate).EndInit();
             ((System.ComponentModel.ISupportInitialize)layers).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -178,5 +204,7 @@
         private Label label2;
         private NumericUpDown learnRate;
         private Button train;
+        private Label label5;
+        private Label label6;
     }
 }
