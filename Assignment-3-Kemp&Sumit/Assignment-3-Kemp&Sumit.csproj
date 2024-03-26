@@ -9,4 +9,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Numpy.Bare" Version="3.11.1.33" />
+    <PackageReference Include="NumSharp" Version="0.30.0" />
+    <PackageReference Include="NumSharp.Bitmap" Version="0.30.0" />
+  </ItemGroup>
+
 </Project>
