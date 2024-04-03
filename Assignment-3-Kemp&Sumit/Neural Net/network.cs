@@ -7,7 +7,7 @@ using NumSharp;
 
 namespace Assignment_3_Kemp_Sumit.Neural_Net
 {
-     class network
+     class network1
     {
         private int num_layers;
         private NDArray sizes;
@@ -36,7 +36,7 @@ namespace Assignment_3_Kemp_Sumit.Neural_Net
             }
         }
 
-        public network(int[] size)
+        public network1(int[] size)
         {
             num_layers = size.Length;
             sizes = size;

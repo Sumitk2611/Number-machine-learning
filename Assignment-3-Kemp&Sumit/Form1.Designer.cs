@@ -44,6 +44,7 @@
             clear = new Button();
             predict = new Button();
             result = new PictureBox();
+            precision = new Label();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)result).BeginInit();
@@ -198,11 +199,21 @@
             result.TabIndex = 6;
             result.TabStop = false;
             // 
+            // precision
+            // 
+            precision.AutoSize = true;
+            precision.Location = new Point(395, 497);
+            precision.Name = "precision";
+            precision.Size = new Size(91, 25);
+            precision.TabIndex = 7;
+            precision.Text = "Precision: ";
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(916, 748);
+            Controls.Add(precision);
             Controls.Add(result);
             Controls.Add(predict);
             Controls.Add(clear);
@@ -238,5 +249,6 @@
         private TextBox epsLabel;
         private TextBox layerLabel;
         private PictureBox result;
+        private Label precision;
     }
 }

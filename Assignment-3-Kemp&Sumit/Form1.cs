@@ -1,7 +1,10 @@
 namespace Assignment_3_Kemp_Sumit
 {
+    using MathNet.Numerics;
+    using MathNet.Numerics.LinearAlgebra;
     using Neural_Net;
     using NumSharp;
+    using System;
     using System.Diagnostics.Eventing.Reader;
     using System.Drawing.Drawing2D;
 
@@ -10,8 +13,13 @@ namespace Assignment_3_Kemp_Sumit
         private Point previousPoint;
         bool isMouseDown = false;
 
+        byte[][] DataSetInputs;
+        byte[] DataSetLables;
+        byte[][] TestSetInputs;
+        byte[] TestSetLables;
+
         mnist_loader ml = new mnist_loader();
-        network Network;
+        NeuralNetwork N;
         Dictionary<int, float> avgs;
 
         public List<Tuple<NDArray, NDArray>> training_data;
@@ -29,16 +37,24 @@ namespace Assignment_3_Kemp_Sumit
             pictureBox1.MouseUp += pictureBox1_MouseUp;
 
             Tuple<List<Tuple<NDArray, NDArray>>, List<Tuple<NDArray, NDArray>>, List<Tuple<NDArray, NDArray>>> tuple = ml.load_data_wrapper(); // testing for now
-
+            Bitmap bmp = new Bitmap(280, 280);
+            using (Graphics gfx = Graphics.FromImage(bmp))
+            {
+                gfx.Clear(Color.White);
+            }
+            pictureBox1.Image = bmp;
             training_data = tuple.Item1;
             validation_data = tuple.Item2;
             test_data = tuple.Item3;
+            LoadDataSet();
+            LoadTestSet();
+
         }
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             previousPoint = e.Location;
-            isMouseDown =true;
+            isMouseDown = true;
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -50,6 +66,10 @@ namespace Assignment_3_Kemp_Sumit
                     if (pictureBox1.Image == null)
                     {
                         Bitmap bmp = new Bitmap(280, 280);
+                        using (Graphics gfx = Graphics.FromImage(bmp))
+                        {
+                            gfx.Clear(Color.White);
+                        }
                         pictureBox1.Image = bmp;
                     }
                     using (Graphics g = Graphics.FromImage(pictureBox1.Image))
@@ -78,28 +98,39 @@ namespace Assignment_3_Kemp_Sumit
         {
             //Bitmap res = new Bitmap(pictureBox1.Image,pictureBox1.Image.Width / 10, pictureBox1.Height / 10);
 
-            Bitmap res = new Bitmap(pictureBox1.Image.Width / 10, pictureBox1.Height / 10);
+            Bitmap res = new Bitmap(28, 28);
             using (Graphics g = Graphics.FromImage((Image)res))
             {
-                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
-                g.DrawImage(pictureBox1.Image, 0, 0, pictureBox1.Image.Width / 10, pictureBox1.Height / 10);
+                g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                g.DrawImage(pictureBox1.Image, 0, 0, 28, 28);
             }
 
             result.Image = res;
 
-            NDArray n = res.ToNDArray(flat: false, copy: true, discardAlpha: false).reshape(28, 28, 4);
+            double[] imageArray = new double[28 * 28];
+            for (int i = 0; i < 28; i++)
+            {
+                for (int j = 0; j < 28; j++)
+                {
+                    Color pixelColor = res.GetPixel(j, i);
+                    // Assuming original MNIST images are white on black, invert colors by subtracting from 255
+                    // Convert to grayscale (here assuming the drawing is black on white background) and normalize to [0,1]
+                    double grayscaleValue = 255 - ((pixelColor.R + pixelColor.G + pixelColor.B) / 3.0);
+                    imageArray[i * 28 + j] = grayscaleValue / 255.0;
+                }
+            }
+            Vector<double> Inputs = Vector<double>.Build.DenseOfArray(imageArray);
 
-            NDArray rgb = n["0:28,0:28,3"];
-            rgb = rgb.reshape(784, 1);
+            int predict = N.FeedForward(Inputs).AbsoluteMaximumIndex();
 
-            int predict = Network.evaluateSample(rgb);
-            
             MessageBox.Show("Prediction: " + predict.ToString());
         }
 
 
         private void train_Click(object sender, EventArgs e)
         {
+            long milliseconds = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond; ;
+
             int eps = 30; int mbs = 10;
             double learn = 3.0;
             int neurons = 30;
@@ -139,23 +170,69 @@ namespace Assignment_3_Kemp_Sumit
             {
                 MessageBox.Show("Invalid Layers");
             }
-
-            Network = new network(new int[] { 784, neurons, 10 });
-            Network.SGD(training_data, eps, mbs, learn, test_data);
-
-            // show results
-            List<int> results = Network.getResults();
-            int bestEpoch = results[0];
-
-            for (int i = 0; i < results.Count(); i++)
+            N = new NeuralNetwork(new int[] { 784, neurons, 10 });
+            Vector<double>[] Inputs = new Vector<double>[DataSetInputs.Length];
+            Vector<double>[] Outputs = new Vector<double>[DataSetInputs.Length]; ;
+            for (int i = 0; i < DataSetInputs.Length; i++)
             {
-                if (results[i] > bestEpoch)
+                Inputs[i] = Vector<double>.Build.DenseOfArray(DataSetInputs[i].Select(x => Convert.ToDouble(x) / 255).ToArray());
+                Outputs[i] = Vector<double>.Build.Dense(10);
+                Outputs[i][DataSetLables[i]] = 1;
+            }
+            N.Train(Inputs, Outputs, learnRate, eps, mbs);
+            ValidationTests();
+           
+        }
+
+        void LoadDataSet()
+        {
+            byte[] file = System.IO.File.ReadAllBytes("train-images.idx3-ubyte");
+            byte[] file2 = System.IO.File.ReadAllBytes("train-labels.idx1-ubyte");
+            byte[] sizear = new byte[4];
+            Array.Copy(file, 4, sizear, 0, 4);
+            Array.Reverse(sizear);
+            int DataSetSize = BitConverter.ToInt32(sizear, 0);
+            DataSetInputs = new byte[DataSetSize][];
+            DataSetLables = new byte[DataSetSize];
+            Array.Copy(file2, 8, DataSetLables, 0, DataSetSize);
+            for (int y = 0; y < DataSetSize; y++)
+            {
+                DataSetInputs[y] = new byte[784];
+                Array.Copy(file, 16 + 784 * y, DataSetInputs[y], 0, 784);
+            }
+        }
+        void LoadTestSet()
+        {
+            byte[] file = System.IO.File.ReadAllBytes("t10k-images.idx3-ubyte");
+            byte[] file2 = System.IO.File.ReadAllBytes("t10k-labels.idx1-ubyte");
+            byte[] sizear = new byte[4];
+            Array.Copy(file, 4, sizear, 0, 4);
+            Array.Reverse(sizear);
+            int DataSetSize = BitConverter.ToInt32(sizear, 0);
+            TestSetInputs = new byte[DataSetInputs.Length][];
+            TestSetLables = new byte[DataSetSize];
+            Array.Copy(file2, 8, TestSetLables, 0, DataSetSize);
+            for (int y = 0; y < DataSetSize; y++)
+            {
+                TestSetInputs[y] = new byte[784];
+                Array.Copy(file, 16 + 784 * y, TestSetInputs[y], 0, 784);
+            }
+        }
+        void ValidationTests()
+        {
+            //Validation Set Test
+            double percent = 0;
+            for (int i = 0; i < 10000; i++)
+            {
+                Vector<double> Inputs = Vector<double>.Build.DenseOfArray(TestSetInputs[i].Select(x => Convert.ToDouble(x) / 255).ToArray());
+                if (N.FeedForward(Inputs).AbsoluteMaximumIndex() == TestSetLables[i])
                 {
-                    bestEpoch = results[i];
+                    percent++;
                 }
             }
-            MessageBox.Show("Best classification rate is : " + ((double)bestEpoch / 100) + "%");
-
+            percent = 100 * percent / 10000;
+            MessageBox.Show("Done Training");
+            precision.Text = "Precision : " + percent.ToString() + "%";
 
         }
     }
