@@ -7,6 +7,7 @@ namespace Assignment_3_Kemp_Sumit
     using System;
     using System.Diagnostics.Eventing.Reader;
     using System.Drawing.Drawing2D;
+    using System.Net;
 
     public partial class Form1 : Form
     {
@@ -37,7 +38,7 @@ namespace Assignment_3_Kemp_Sumit
             pictureBox1.MouseUp += pictureBox1_MouseUp;
 
             Tuple<List<Tuple<NDArray, NDArray>>, List<Tuple<NDArray, NDArray>>, List<Tuple<NDArray, NDArray>>> tuple = ml.load_data_wrapper(); // testing for now
-            Bitmap bmp = new Bitmap(280, 280);
+            Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Width);
             using (Graphics gfx = Graphics.FromImage(bmp))
             {
                 gfx.Clear(Color.White);
@@ -50,43 +51,47 @@ namespace Assignment_3_Kemp_Sumit
             LoadTestSet();
 
         }
+        GraphicsPath drawingPath = new GraphicsPath();
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             previousPoint = e.Location;
             isMouseDown = true;
+            drawingPath.StartFigure(); // Start a new figure in the path
+
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (isMouseDown == true)
             {
-                if (previousPoint != null)
+                drawingPath.AddLine(previousPoint, e.Location);
+                if (pictureBox1.Image == null)
                 {
-                    if (pictureBox1.Image == null)
+                    Bitmap bmp = new Bitmap(pictureBox1.Width, pictureBox1.Width);
+                    using (Graphics gfx = Graphics.FromImage(bmp))
                     {
-                        Bitmap bmp = new Bitmap(280, 280);
-                        using (Graphics gfx = Graphics.FromImage(bmp))
-                        {
-                            gfx.Clear(Color.White);
-                        }
-                        pictureBox1.Image = bmp;
+                        gfx.Clear(Color.White);
                     }
-                    using (Graphics g = Graphics.FromImage(pictureBox1.Image))
-                    {
-                        g.DrawLine(new Pen(Color.Black, 30), previousPoint, e.Location);
-                        g.SmoothingMode = SmoothingMode.AntiAlias;
-                    }
-                    pictureBox1.Invalidate();
-                    previousPoint = e.Location;
+                    pictureBox1.Image = bmp;
                 }
+                using (Graphics g = Graphics.FromImage(pictureBox1.Image))
+                {
+                    g.SmoothingMode = SmoothingMode.AntiAlias;
+                    g.DrawPath(new Pen(Color.Black, 28), drawingPath);
+
+                }
+                pictureBox1.Invalidate();
+                previousPoint = e.Location;
             }
+
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             isMouseDown = false;
             previousPoint = Point.Empty;
+            drawingPath.Reset();
         }
 
         private void clear_Click(object sender, EventArgs e)
@@ -181,7 +186,7 @@ namespace Assignment_3_Kemp_Sumit
             }
             N.Train(Inputs, Outputs, learnRate, eps, mbs);
             ValidationTests();
-           
+
         }
 
         void LoadDataSet()
@@ -231,7 +236,7 @@ namespace Assignment_3_Kemp_Sumit
                 }
             }
             percent = 100 * percent / 10000;
-            MessageBox.Show("Done Training");
+            MessageBox.Show($"Done Training! Precison: {percent}% ", "Successful");
             precision.Text = "Precision : " + percent.ToString() + "%";
 
         }

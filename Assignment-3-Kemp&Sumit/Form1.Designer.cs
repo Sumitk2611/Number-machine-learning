@@ -53,9 +53,10 @@
             // pictureBox1
             // 
             pictureBox1.BorderStyle = BorderStyle.FixedSingle;
-            pictureBox1.Location = new Point(12, 90);
+            pictureBox1.Location = new Point(34, 90);
             pictureBox1.Name = "pictureBox1";
-            pictureBox1.Size = new Size(280, 280);
+            pictureBox1.Size = new Size(382, 378);
+            pictureBox1.SizeMode = PictureBoxSizeMode.AutoSize;
             pictureBox1.TabIndex = 0;
             pictureBox1.TabStop = false;
             // 
@@ -71,7 +72,7 @@
             panel1.Controls.Add(label3);
             panel1.Controls.Add(label2);
             panel1.Controls.Add(label1);
-            panel1.Location = new Point(392, 91);
+            panel1.Location = new Point(688, 100);
             panel1.Name = "panel1";
             panel1.Size = new Size(369, 368);
             panel1.TabIndex = 1;
@@ -155,7 +156,7 @@
             // 
             label5.AutoSize = true;
             label5.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point);
-            label5.Location = new Point(456, 23);
+            label5.Location = new Point(752, 32);
             label5.Name = "label5";
             label5.Size = new Size(247, 54);
             label5.TabIndex = 2;
@@ -165,7 +166,7 @@
             // 
             label6.AutoSize = true;
             label6.Font = new Font("Segoe UI", 20F, FontStyle.Bold, GraphicsUnit.Point);
-            label6.Location = new Point(19, 23);
+            label6.Location = new Point(136, 32);
             label6.Name = "label6";
             label6.Size = new Size(123, 54);
             label6.TabIndex = 3;
@@ -173,7 +174,7 @@
             // 
             // clear
             // 
-            clear.Location = new Point(180, 50);
+            clear.Location = new Point(304, 50);
             clear.Name = "clear";
             clear.Size = new Size(112, 34);
             clear.TabIndex = 4;
@@ -183,7 +184,7 @@
             // 
             // predict
             // 
-            predict.Location = new Point(19, 393);
+            predict.Location = new Point(304, 484);
             predict.Name = "predict";
             predict.Size = new Size(112, 34);
             predict.TabIndex = 5;
@@ -193,16 +194,17 @@
             // 
             // result
             // 
-            result.Location = new Point(19, 469);
+            result.Location = new Point(34, 519);
             result.Name = "result";
-            result.Size = new Size(200, 200);
+            result.Size = new Size(114, 111);
+            result.SizeMode = PictureBoxSizeMode.StretchImage;
             result.TabIndex = 6;
             result.TabStop = false;
             // 
             // precision
             // 
             precision.AutoSize = true;
-            precision.Location = new Point(395, 497);
+            precision.Location = new Point(691, 506);
             precision.Name = "precision";
             precision.Size = new Size(91, 25);
             precision.TabIndex = 7;
@@ -212,7 +214,7 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(916, 748);
+            ClientSize = new Size(1415, 692);
             Controls.Add(precision);
             Controls.Add(result);
             Controls.Add(predict);
